@@ -1,13 +1,23 @@
-#include <ctype.h>
 #include <stdio.h>
 
-// TODO
 int main(void) {
-	char* first, *last;
+	int c, first_letter;
 
 	printf("Enter a first and last name: ");
-	scanf("%s %s", first, last);
 
-	printf("%s, %c", first, toupper(last[0]));
+	while ((c = getchar()) == ' ') // skip all spaces
+		;	
+
+	first_letter = c;
+
+	while ((c = getchar()) != ' ')
+		;	
+	
+	while ((c = getchar()) != '\n') {
+		putchar(c);
+	}
+
+	printf(", %c.", first_letter);
+
 	return 0;
 }

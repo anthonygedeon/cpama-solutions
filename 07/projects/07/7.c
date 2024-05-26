@@ -1,6 +1,5 @@
 #include <stdio.h>
 
-// TODO
 int main(void) {
 	int num1, num2, denom1, denom2, result_n, result_d;
 	char operator;
