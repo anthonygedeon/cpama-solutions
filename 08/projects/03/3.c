@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+// TODO
 int main(void) {
 	bool digit_seen[10] = {false}; 
 	int digit; 
