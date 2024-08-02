@@ -20,3 +20,7 @@ int f(char *s, char *t)
 (c) In general, what value does `f` return when passed two strings `s` and `t`?
 
 ### Solution
+
+(a) 3
+(b) 0
+(c) `f` returns the index of a character that is not in `t`
