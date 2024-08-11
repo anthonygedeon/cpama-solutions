@@ -4,92 +4,118 @@
 #include <stdlib.h>
 #include <time.h>
 
-int roll_dice(void) {
+#define DIE_SIDES_MAX 6
 
+typedef enum {
+	WON = 0, LOST = 1
+} points; // not in chapter 9 but makes the code a bit nicer to work with
+
+void init_rng(void);
+void update_score(int scores[], points side);
+void prompt_winner(void);
+void prompt_loser(void);
+void prompt_retry(char command);
+void prompt_score(int score[]);
+void first_round(void);
+bool play_game(void);
+int roll_dice(void);
+
+void init_rng(void) {
+	srand((unsigned int) time(NULL));
+}
+
+void update_score(int scores[], points side) {
+	scores[side]++;
+}
+
+void prompt_winner(void) {
+	printf("You win!\n");
+}
+
+void prompt_loser(void) {
+	printf("You lose!\n");
+}
+
+void prompt_retry(char command) {
+	printf("Play again? (Y/N): ");
+	scanf("%c", &command);
+	printf("\n");
+}
+
+void prompt_score(int score[]) {
+	printf("Wins: %d  Losses: %d", score[WON], score[LOST]);
+}
+
+int roll_dice(void) {
+	int die_a = (rand() % DIE_SIDES_MAX) + 1;
+	int die_b = (rand() % DIE_SIDES_MAX) + 1;
+	return die_a + die_b;
 }
 
 bool play_game(void) {
+	int point = 0;
 
+	while(true) {
+		int sum = roll_dice();
+
+		switch(sum) {
+			case 2: case 3: case 12:
+				printf("You lose!\n");
+				break;
+			case 11:
+				printf("You win!\n");
+				break;
+		}
+
+		if (point == sum) {
+			printf("You win!\n");
+			break;
+		} else if (sum == 7) {
+			printf("You lose!\n");
+			break;
+		}
+
+		printf("You rolled: %d\n", sum);
+		point = sum;
+		printf("Your point: %d\n", point);
+	}
+	
+	return false;
 }
 
 // TODO: make the code better
 int main(void) {
-	srand((unsigned int) time(NULL));
+	init_rng();
 
-	int point = 0;
-	char response;
-	bool play_again = true;
-	bool is_first_round = true;
+	bool is_first_roll = false;
 	
-	while (play_again) {
-		int dice_a = (rand() % 6) + 1;
-		int dice_b = (rand() % 6) + 1;
-		int sum = dice_a + dice_b;
+	int score[2] = { 0, 0 };
 
-		if (is_first_round) {
-			printf("You rolled: %d\n", sum);
-
-			point = sum;
-			printf("Your point is: %d\n", point);
-			is_first_round = false;
-
-			dice_a = (rand() % 6) + 1;
-			dice_b = (rand() % 6) + 1;
-			sum = dice_a + dice_b;
-			
-			switch(sum) {
-				case 2: case 3: case 12:
-					printf("You lose!\n");
-					play_again = true;
-					break;
-				case 7: case 11:
-					printf("You Win!\n");
-					play_again = true;
-					break;
-			}
-			
-			printf("Play again? ");
-			scanf("%c", &response);
-			printf("\n");
-
-			if (tolower(response) == 'y') {
-				play_again = true;
-			} else if (tolower(response) == 'n') {
-				play_again = false;
-			}
-		}
-		
-		switch(sum) {
+	char command;
+	do {
+		int first_roll = roll_dice();
+		printf("You rolled: %d\n", first_roll);
+		switch(first_roll) {
 			case 2: case 3: case 12:
 				printf("You lose!\n");
-				play_again = true;
+				update_score(score, LOST);
+				is_first_roll = true;
 				break;
-			case 11:
+			case 7: case 11:
 				printf("You win!\n");
-				play_again = true;
+				update_score(score, WON);
+				is_first_roll = true;
 				break;
 		}
-
-		printf("You rolled: %d\n", sum);
-
-		if (point == sum) {
-			printf("You win!");
-			break;
-		} else if (sum == 7) {
-			printf("You lose!");
-			break;
+		if (!is_first_roll) {
+			play_game();
 		}
 
-		printf("Play again? ");
-		scanf("%c", &response);
-		printf("\n");
+		prompt_retry(command);
 
-		if (tolower(response) == 'y') {
-			play_again = true;
-		} else if (tolower(response) == 'n') {
-			play_again = false;
-		}
-	}
-	
+	} while(tolower(command) == 'y');
+
+	prompt_score(score);
+
 	return 0;
 }
